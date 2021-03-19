@@ -27,6 +27,7 @@ public class SharedViewModel extends ViewModel {
     private final MutableLiveData<String> rubValue = new MutableLiveData<>();
     private final MutableLiveData<String> currencyValue = new MutableLiveData<>();
     private final MutableLiveData<Integer> selectedSpinnerItemPosition = new MutableLiveData<>();
+    private final MutableLiveData<Long> timerStartTimeMilliseconds = new MutableLiveData<>();
 
     public void setSavedData(SharedPreferences savedData) {
         this.savedData = savedData;
@@ -97,6 +98,18 @@ public class SharedViewModel extends ViewModel {
 
     public void setSelectedSpinnerItemPosition(Integer position) {
         selectedSpinnerItemPosition.setValue(position);
+    }
+
+    public Long getTimerStartTimeMilliseconds() {
+        if (timerStartTimeMilliseconds.getValue() == null) {
+            return 0L;
+        }
+
+        return timerStartTimeMilliseconds.getValue();
+    }
+
+    public void setTimerStartTimeMilliseconds(Long milliseconds) {
+        timerStartTimeMilliseconds.setValue(milliseconds);
     }
 
     public void loadData(Context context, Handler handler) {

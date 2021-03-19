@@ -22,6 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
@@ -61,7 +62,21 @@ public class MainActivity extends AppCompatActivity {
         tabs.setupWithViewPager(viewPager);
 
         FloatingActionButton update = findViewById(R.id.fab);
-        update.setOnClickListener(view -> loadRates());
+        update.setOnClickListener(view -> {
+            timer.cancel();
+            loadRates();
+
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(() -> {
+                        loadRates();
+                        viewModel.setTimerStartTimeMilliseconds(Calendar.getInstance().getTimeInMillis());
+                    });
+                }
+            }, 60000, 60000);
+        });
 
         context = this;
 
@@ -99,12 +114,30 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         timer = new Timer();
+
+        long timerLastStart = viewModel.getTimerStartTimeMilliseconds();
+        long currentTime = Calendar.getInstance().getTimeInMillis();
+        int delay = 10000;
+
+        if (timerLastStart != 0) {
+            long delta = currentTime - timerLastStart;
+
+            if (delta > 60000) {
+                delay = 0;
+            } else if (delta >= 0 && delta <= 60000) {
+                delay = 60000 - (int) delta;
+            }
+        }
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> loadRates());
+                runOnUiThread(() -> {
+                    loadRates();
+                    viewModel.setTimerStartTimeMilliseconds(Calendar.getInstance().getTimeInMillis());
+                });
             }
-        }, 10000, 60000);
+        }, delay, 60000);
     }
 
     private void loadRates() {
