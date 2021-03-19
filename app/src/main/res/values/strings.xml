@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Курсы валют ЦБ РФ</string>
+    <string name="current_date_text">Сегодня</string>
+    <string name="rates_last_update">Курсы обновлены %1$s</string>
+    <string name="currency_nominal_and_char_code">%1$d %2$s</string>
+    <string name="tab_text_1">Курсы валют (RUB)</string>
+    <string name="tab_text_2">Конвертер (RUB)</string>
+    <string name="no_connection">Отсутствует подключение к интернету</string>
+    <string name="server_error_message">Ошибка получения данных с сервера</string>
+    <string name="successful_load">Курсы валют успешно обновлены</string>
+    <string name="russia_char_code">RUB</string>
+    <string name="convert_section_input_field_hint">Введите значение</string>
+    <string name="base_url">https://www.cbr-xml-daily.ru/</string>
+    <string name="data_format">daily_json.js</string>
+</resources>
