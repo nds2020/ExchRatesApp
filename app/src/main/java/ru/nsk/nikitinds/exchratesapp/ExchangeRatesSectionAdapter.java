@@ -64,7 +64,6 @@ public class ExchangeRatesSectionAdapter extends RecyclerView.Adapter<ExchangeRa
             Currency currency = currencies.get(listIndex);
             flag.setImageResource(currency.getFlagResource());
             nominalAndCharCode.setText(context.getString(R.string.currency_nominal_and_char_code, currency.getNominal(), currency.getCharCode()));
-            /*nominalAndCharCode.setText(currency.getNominal() + " " + currency.getCharCode());*/
             name.setText(currency.getName());
             currentRate.setText(String.format(Locale.ROOT,"%.4f", currency.getCurrentValue()));
         }

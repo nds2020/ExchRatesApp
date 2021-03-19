@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -29,10 +30,10 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
     private SharedViewModel viewModel;
     private SharedPreferences savedData;
-    private Timer mTimer;
+    private Timer timer;
     private Context context;
     private ProgressBar loadingIndicator;
-    private Handler mHandler;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +50,22 @@ public class MainActivity extends AppCompatActivity {
         TextView currentDate = findViewById(R.id.tv_current_date);
         currentDate.setText(new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date()));
 
-        TextView notice = findViewById(R.id.tv_notice);
-        notice.setText(viewModel.getNoticeText().getValue());
-        viewModel.getNoticeText().observe(this, notice::setText);
+        TextView ratesLastUpdate = findViewById(R.id.tv_notice);
+        viewModel.getRatesLastUpdate().observe(this, ratesLastUpdate::setText);
 
         ViewPager viewPager = findViewById(R.id.view_pager);
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), 0);
         viewPager.setAdapter(sectionsPagerAdapter);
 
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> loadRates());
+        FloatingActionButton update = findViewById(R.id.fab);
+        update.setOnClickListener(view -> loadRates());
 
         context = this;
 
-        mHandler = new Handler(Looper.getMainLooper()) {
+        handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == 0) {
@@ -83,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if (mTimer != null) {
-            mTimer.cancel();
+        if (timer != null) {
+            timer.cancel();
         }
 
-        savedData.edit().putString("noticeText", viewModel.getNoticeText().getValue()).apply();
+        savedData.edit().putString("ratesLastUpdate", viewModel.getRatesLastUpdate().getValue()).apply();
         savedData.edit().putString("rubValue", viewModel.getRubValue()).apply();
         savedData.edit().putString("currencyValue", viewModel.getCurrencyValue().getValue()).apply();
         savedData.edit().putInt("spinnerItemPosition", viewModel.getSelectedSpinnerItemPosition()).apply();
@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        mTimer = new Timer();
-        mTimer.schedule(new TimerTask() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(() -> loadRates());
@@ -108,13 +108,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadRates() {
-        NetworkInfo info = (NetworkInfo) ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        NetworkInfo info = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
 
         if (info == null || !info.isConnected()) {
             Toast.makeText(context, getString(R.string.no_connection), Toast.LENGTH_LONG).show();
         } else {
             loadingIndicator.setVisibility(View.VISIBLE);
-            viewModel.loadData(context, mHandler);
+            viewModel.loadData(context, handler);
         }
     }
 }

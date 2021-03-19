@@ -23,7 +23,7 @@ public class SharedViewModel extends ViewModel {
     private SharedPreferences savedData;
     private final MutableLiveData<String> jsonResponse = new MutableLiveData<>();
     private final MutableLiveData<List<Currency>> currenciesList = new MutableLiveData<>();
-    private final MutableLiveData<String> noticeText = new MutableLiveData<>();
+    private final MutableLiveData<String> ratesLastUpdate = new MutableLiveData<>();
     private final MutableLiveData<String> rubValue = new MutableLiveData<>();
     private final MutableLiveData<String> currencyValue = new MutableLiveData<>();
     private final MutableLiveData<Integer> selectedSpinnerItemPosition = new MutableLiveData<>();
@@ -50,13 +50,14 @@ public class SharedViewModel extends ViewModel {
         return currenciesList;
     }
 
-    public LiveData<String> getNoticeText() {
-        if (noticeText.getValue() != null) {
-            return noticeText;
+    public LiveData<String> getRatesLastUpdate() {
+        if (ratesLastUpdate.getValue() != null) {
+            return ratesLastUpdate;
         }
 
-        noticeText.setValue(savedData.getString("noticeText", ""));
-        return noticeText;
+        ratesLastUpdate.setValue(savedData.getString("ratesLastUpdate", "Курсы валют " +
+                "будут запрошены через 10 секунд. Чтобы не ждать, нажмите кнопку внизу экрана"));
+        return ratesLastUpdate;
     }
 
     public String getRubValue() {
@@ -110,7 +111,7 @@ public class SharedViewModel extends ViewModel {
                     message.sendToTarget();
                 } else {
                     String currentData = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).format(new Date());
-                    noticeText.postValue(context.getString(R.string.rates_last_update, currentData));
+                    ratesLastUpdate.postValue(context.getString(R.string.rates_last_update, currentData));
                     jsonResponse.postValue(response);
                     currenciesList.postValue(convertFromJson(context, response));
                     Message message = handler.obtainMessage(1);

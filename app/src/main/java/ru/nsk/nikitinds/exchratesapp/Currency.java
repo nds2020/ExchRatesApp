@@ -58,10 +58,6 @@ public class Currency {
         this.currentValue = currentValue;
     }
 
-    public double getPreviousValue() {
-        return previousValue;
-    }
-
     public void setPreviousValue(double previousValue) {
         this.previousValue = previousValue;
     }
